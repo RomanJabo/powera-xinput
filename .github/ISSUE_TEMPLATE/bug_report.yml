@@ -1,0 +1,84 @@
+name: Something does not work
+description: A fault while mapping, detecting the controller or installing.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The most useful thing you can send is the raw report output. Almost
+        every fault here comes down to one of two things: the controller is a
+        model with different ids, or it sends a different byte layout. Both are
+        visible in `read_hid.py` and in neither case is the answer a guess.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: script
+    attributes:
+      label: Which script
+      options:
+        - powera_to_xbox.py
+        - read_hid.py
+        - smoketest/smoketest.py
+        - it does not start at all
+    validations:
+      required: true
+
+  - type: input
+    id: controller
+    attributes:
+      label: Controller and ids
+      description: >
+        The model as printed on the pad, and the ids from
+        `python powera_to_xbox.py --list`.
+      placeholder: PowerA Wired Controller for Nintendo Switch, VID=0x20d6 PID=0xa711
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Windows and Python version
+      placeholder: Windows 11 26200, Python 3.13.4
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: >
+        Everything the script printed, including the traceback if there was one.
+        Please paste text rather than a screenshot, so it can be searched.
+      render: text
+
+  - type: textarea
+    id: raw-report
+    attributes:
+      label: Output of read_hid.py
+      description: >
+        If a button is in the wrong place or nothing moves, run
+        `python read_hid.py`, press the affected button once, and paste the
+        lines. The first line at rest is the useful baseline.
+      render: text
+
+  - type: checkboxes
+    id: ruled-out
+    attributes:
+      label: Already ruled out
+      options:
+        - label: >
+            ViGEmBus is installed, and the machine was rebooted if its installer
+            asked for it.
+        - label: >
+            Steam Input is off for this controller. A game reading the pad twice
+            looks exactly like a mapping fault.
+        - label: >
+            `python smoketest/smoketest.py` passes. If it does not, the fault is
+            in the mapping logic, not in your hardware.

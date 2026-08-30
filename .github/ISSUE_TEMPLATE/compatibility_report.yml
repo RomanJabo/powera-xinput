@@ -1,0 +1,61 @@
+name: It works on my setup
+description: A report from another PowerA model or another machine.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Everything in this repository was measured on one controller. PowerA
+        gives each model its own product id, and there is no way to find out
+        which ones behave the same except by hearing it. Reports are welcome
+        including the ones that say "works, nothing needed adjusting" — those
+        are what turns a list of one into a list worth reading.
+
+  - type: input
+    id: model
+    attributes:
+      label: Controller model
+      description: As printed on the pad or its box.
+      placeholder: PowerA Enhanced Wired Controller for Nintendo Switch
+    validations:
+      required: true
+
+  - type: input
+    id: ids
+    attributes:
+      label: Vendor and product id
+      description: From `python powera_to_xbox.py --list`.
+      placeholder: VID=0x20d6 PID=0xa712
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Windows and Python version
+      placeholder: Windows 10 22H2, Python 3.11.9
+
+  - type: textarea
+    id: adjusted
+    attributes:
+      label: What needed adjusting
+      description: >
+        A different `--pid`, a larger `--deadzone`, changed entries in
+        `BUTTON_MAP_LOW` / `BUTTON_MAP_HIGH` / `HAT_MAP`, or nothing at all.
+
+  - type: textarea
+    id: layout
+    attributes:
+      label: Report layout, if it differed
+      description: >
+        The output of `read_hid.py` at rest and for the buttons that moved
+        somewhere else. This is what lets the mapping be extended rather than
+        guessed at.
+      render: text
+
+  - type: textarea
+    id: not-working
+    attributes:
+      label: Anything that did not work
+      description: >
+        Buttons without an equivalent, a game that ignored the virtual pad,
+        anything that felt wrong.

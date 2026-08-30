@@ -1,6 +1,10 @@
 # powera-xinput
 
-Use a PowerA wired Nintendo Switch controller as an Xbox 360 controller on Windows.
+Use a PowerA wired Nintendo Switch controller as an Xbox controller on Windows.
+
+*[Deutsche Version](README.de.md)*
+
+---
 
 Windows sees most PowerA Switch pads as a generic DirectInput HID device. Plenty of
 games only listen to XInput, so the controller shows up in the system settings, moves
@@ -14,12 +18,27 @@ hardware (vendor id `0x057E`) speaking a different protocol — use
 third-party PowerA pads (vendor id `0x20D6`), the wired ones sold as licensed Switch
 accessories.
 
-Two small files, no GUI, no background service:
+### Why this is here
 
-| File | Purpose |
+The pad does its job on the Switch. On the PC, Windows saw it, the test dialog moved
+the sticks — and the games did not care. The fix turned out to be about a hundred
+lines, and the question comes up often enough that they are worth publishing.
+
+It runs on my machine with my controller, and that is the only setup it has been
+tested on. PowerA gives each model its own product id, so yours may well differ.
+`read_hid.py` and [docs/hid-report.md](docs/hid-report.md) exist so that adapting it
+takes a few minutes instead of starting over.
+
+## What is in here
+
+No GUI, no background service, no configuration file:
+
+| Path | Purpose |
 | --- | --- |
 | `powera_to_xbox.py` | the mapper you run while playing |
 | `read_hid.py` | diagnostic dump of raw HID reports, for adapting the mapping |
+| [docs/hid-report.md](docs/hid-report.md) | what the pad puts on the wire, byte by byte |
+| `smoketest/smoketest.py` | checks the mapping logic without a controller attached |
 
 ## Requirements
 
@@ -123,8 +142,9 @@ controller settings and turn Steam Input off for the PowerA device.
 
 **Buttons land in the wrong place** — your model has a different report layout. Run
 `python read_hid.py`, press one button at a time, and note which byte changes and which
-bit flips; then adjust `BUTTON_MAP_LOW`, `BUTTON_MAP_HIGH` and `HAT_MAP` in
-`powera_to_xbox.py`. A pull request with your model and its ids is welcome.
+bit flips; [docs/hid-report.md](docs/hid-report.md) says which byte is which. Then
+adjust `BUTTON_MAP_LOW`, `BUTTON_MAP_HIGH` and `HAT_MAP` in `powera_to_xbox.py`. A pull
+request with your model and its ids is welcome.
 
 **Nothing happens in one specific game** — check whether the game reads input only while
 focused, and start the mapper before the game.
@@ -139,7 +159,8 @@ checking their rules first.
 report the pad sends. The handler decodes the button bitmasks, the HAT switch and the
 four stick axes, and writes them to a virtual Xbox 360 pad created through `vgamepad`,
 which talks to the ViGEmBus driver. Roughly a hundred lines, meant to be read and
-adapted rather than configured.
+adapted rather than configured. The byte-by-byte layout is in
+[docs/hid-report.md](docs/hid-report.md).
 
 ViGEmBus emulates either an Xbox 360 pad or a DualShock 4, and the 360 one is what
 Windows registers as an XInput device — exactly the interface these games are missing.
@@ -148,10 +169,22 @@ model costs nothing: the button set has not changed since 2005. Only the Series 
 Share button and the impulse triggers live outside XInput, and neither exists on a
 Switch pad anyway.
 
+## Checking a change
+
+`smoketest/smoketest.py` runs the axis maths and the report handler against a stand-in
+gamepad, so the mapping can be checked without plugging anything in:
+
+```
+python smoketest/smoketest.py
+```
+
+It still imports `vgamepad`, because the button constants come from there.
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Third-party components and their licenses are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-Not affiliated with, endorsed by or connected to Nintendo or PowerA. "Nintendo Switch"
-and "PowerA" are trademarks of their respective owners and are used here only to
-describe the hardware this script talks to.
+Not affiliated with, endorsed by or connected to Nintendo, PowerA or Microsoft.
+"Nintendo Switch", "PowerA" and "Xbox" are trademarks of their respective owners and
+are used here only to describe the hardware this script talks to.
