@@ -1,0 +1,6 @@
+# Raw HID access to the controller (Windows only)
+pywinusb==0.4.2
+
+# Virtual Xbox 360 pad via the ViGEmBus driver.
+# ViGEmBus itself is a separate driver install, see README.
+vgamepad==0.1.0
